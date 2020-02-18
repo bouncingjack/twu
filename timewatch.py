@@ -1,10 +1,13 @@
 import datetime as dt
+from random import randint
 
+import twlog
 import twweb
 import twargs
 import twkml
-from random import randint
 
+
+logger = twlog.TimeWatchLogger()
 
 class Report:
     """
@@ -74,7 +77,18 @@ class Report:
         return not date_in_question.weekday() in [4, 5]
 
     def _gen_kml(self):
-        yield
+        for d in self.generate_work_dates():
+            with twkml.KMLData(download_date=d, chrome_driver=self.chrome_driver, params=params) as k:
+                times = k.get_work_times()
+                if k.check_time_at_work(times=times, required_diff=1):
+                    logger.info('Was at work on %s between %s and %s', 
+                                dt.datetime.strftime(k.download_date, '%d/%m/%Y'),
+                                dt.datetime.strftime(times['start'], '%H:%M'),
+                                dt.datetime.strftime(times['end'], '%H:%M'))
+                    k.set_workday_hours(times)
+                    yield k
+                else:
+                    logger.info('Not at work on %s', dt.datetime.strftime(k.download_date, '%d/%m/%Y'))
 
 class ChromeWebDriver:
     """
