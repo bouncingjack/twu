@@ -112,7 +112,8 @@ class KMLData:
     
     
     def set_workday_hours(self, times):
-        pass
+        self.start = format_time(times['start'])
+        self.end = format_time(times['end'])
 
     def check_time_at_work(self, times, required_diff=1):
         if not times:

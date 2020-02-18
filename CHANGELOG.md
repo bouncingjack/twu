@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 This changelog is based on a previous changelog that had to depricated and removed due to the transition to GitHub.
 
+## [0.0.3]
+### Added
+* Timewatch fill based on timeline or spoofing
 
 ## [0.0.2]
 ### Added

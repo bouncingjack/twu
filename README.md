@@ -88,9 +88,13 @@ date range:
     python timewatch.py --start-date 01-11-2019 --end-date 22-11-2019
 
 single specific date (overrides --start-date/--end-date):
-
-    python timewatch.py --specific-date 13-11-2019
-
+```
+python timewatch.py --specific-date 13-11-2019
+```
+equivalently enter the same date in start and end:
+```
+python timewatch.py --start-date 13-11-2019 --end-date 13-11-2019
+```
 ### parameters file
 By default the parameters file is `params` in the root of this project (protected by .gitignore).  
 If you wish to change
