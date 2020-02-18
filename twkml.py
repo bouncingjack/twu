@@ -45,3 +45,6 @@ class KMLData:
     def _extract_kml_data(self):
         pass
 
+
+def format_time(d):
+    pass

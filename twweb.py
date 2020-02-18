@@ -1,4 +1,8 @@
-# imports
+from selenium import webdriver
+
+import twlog
+
+logger = twlog.TimeWatchLogger
 
 class TimeWatch:
     """
@@ -6,8 +10,11 @@ class TimeWatch:
     This class is a context manager.
     `with` statement opens a chrome driver instance and logs into *TimeWatch* site.
     """
+    
+    _user_cred = ''
+    _url = r'https://checkin.timewatch.co.il/punch/punch.php'
 
-    def __init__(self):        
+    def __init__(self, chrome_driver, params):        
         self._user_cred = params.parameters['user']
         self.chrome_driver = chrome_driver
         self._driver = None
@@ -33,5 +40,8 @@ class TimeWatch:
         self._driver.find_element_by_xpath(
             '//*[@id="cpick"]/table/tbody/tr[1]/td/div/div[2]/p/table/tbody/tr[4]/td[2]/input').click()
         logger.info('Logged in for worker %s', self._user_cred['worker'])
+
+    def edit_single_date(self, start_time, end_time, download_date):
+        pass
 
 
