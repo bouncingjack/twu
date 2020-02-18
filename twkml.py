@@ -77,6 +77,13 @@ class KMLData:
     def set_workday_hours(self, times):
         pass
 
+    def check_time_at_work(self, times, required_diff=1):
+        if not times:
+            return False
+        diff = times['end'] - times['start']
+        is_at_work_enough_time = diff > dt.timedelta(hours=required_diff)
+        return is_at_work_enough_time
+
     def _extract_kml_data(self):
         """
         Extract kml data from kml file and into memory.
