@@ -1,5 +1,6 @@
 import datetime as dt
 from random import randint
+import time
 
 import twlog
 import twweb
@@ -9,7 +10,6 @@ import twpar
 
 
 logger = twlog.TimeWatchLogger()
-params = twpar.TimeWatchParametersSingleton()
 
 class Report:
     """
@@ -111,6 +111,17 @@ class ChromeWebDriver:
 
 
 if __name__ == '__main__':
-    tw_args = twargs.TWArgs()
-    args = tw_args()
+    logger.info('Start')
+    
+    t = time.time()
+    a = twargs.TWArgs()
+
+    args = a()
+    params = twpar.TimeWatchParametersSingleton(args.parameters_file)
+    
+    c = ChromeWebDriver(args.driver_executable)
+    r = Report(start_date=args.start_date, end_date=args.end_date, chrome_driver=c, force_times=args.force_times)
+    r()
+    
+    logger.info('Finished in {:.2f} seconds'.format(time.time() - t))
     
