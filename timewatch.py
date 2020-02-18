@@ -5,9 +5,11 @@ import twlog
 import twweb
 import twargs
 import twkml
+import twpar
 
 
 logger = twlog.TimeWatchLogger()
+params = twpar.TimeWatchParametersSingleton()
 
 class Report:
     """
@@ -90,13 +92,20 @@ class Report:
                 else:
                     logger.info('Not at work on %s', dt.datetime.strftime(k.download_date, '%d/%m/%Y'))
 
+#TODO expand into a context manager(?)
 class ChromeWebDriver:
     """
-    Subclass for the chromedriver - path container
+    Subclass for the chromedriver - keep the path in one place
     """
-
+    driver_path = ''
+    #TODO expand to whole wrapper for driver
     def __init__(self, executable_path):
-        pass
+        """
+        Initialize :class:`ChromeWebDriver`
+
+        :param str executable_path: full path to the chrome driver executable
+        """
+        self.driver_path = executable_path
 
 
 
