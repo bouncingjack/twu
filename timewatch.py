@@ -51,9 +51,29 @@ class Report:
                         download_date=k.download_date)
     
     def generate_work_dates(self):
-        yield
+        """
+        generator of dates in sequence between two given dates.\n
+        yields dates in the sequence for iteration only if they are work days.
 
-    def _gen_kml(self)
+        :yields: date for upadte
+        """
+        delta = self.end_date - self.start_date
+        for d in range(delta.days + 1):
+            tmp_date = self.start_date + dt.timedelta(days=d)
+            if self.is_work_day(tmp_date): 
+                yield tmp_date 
+
+    def is_work_day(self, date_in_question):
+
+        """
+        checks if the date in question is a workday: Sunday - Thursday
+
+        :param datetime: datetime object of the date to check
+        :return bool: True for Sunday..Thursday and False otherwise
+        """
+        return not date_in_question.weekday() in [4, 5]
+
+    def _gen_kml(self):
         yield
 
 class ChromeWebDriver:
