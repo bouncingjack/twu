@@ -2,7 +2,7 @@ from selenium import webdriver
 
 import twlog
 
-logger = twlog.TimeWatchLogger
+logger = twlog.TimeWatchLogger()
 
 class TimeWatch:
     """

@@ -5,6 +5,7 @@ from fastkml import kml
 import collections
 import webbrowser
 import platform
+import time
 
 import twlog
 
@@ -97,8 +98,8 @@ class KMLData:
         self.download_date = download_date
         self.download_dir = params.parameters['download_dir']
         self.chrome_driver = chrome_driver
-        self.work_lat = params.parameters['work']['lat']
-        self.work_long = params.parameters['work']['long']
+        self.work_lat = round(float(params.parameters['work']['lat']), 5)
+        self.work_long = round(float(params.parameters['work']['long']), 5)
         self.start = None
         self.end = None
 
