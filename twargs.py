@@ -1,6 +1,7 @@
 import argparse
 import os
 import datetime as dt
+import platform
 
 
 class TWArgs:
@@ -18,7 +19,7 @@ class TWArgs:
                                  help='enter end date (included) in DD-MM-YYYY format')
         self.parser.add_argument('--parameters-file', dest='parameters_file', default=os.path.join(os.path.dirname(__file__), 'params'),
                                  help='full path to local parameters file')
-        self.parser.add_argument('--driver-executable', dest='driver_executable', default=os.path.join(os.path.dirname(__file__), 'executables', 'chromedriver.exe'),
+        self.parser.add_argument('--driver-executable', dest='driver_executable', default=self.driver_executable_select(),
                                  help='full path to chrome driver executable')
         self.parser.add_argument('--force-times', dest='force_times', default=None, nargs='*', type=str,
                                  help='enter forced start time (at correct time zone) in HH:MM format')
@@ -38,6 +39,16 @@ class TWArgs:
             args_output.end_date = args_output.specific_date
 
         return args_output
+    
+    def driver_executable_select(self):
+        if platform.system() == 'Linux':
+            driver_name = 'chromedriver'
+        elif platform.system() == 'Windows':
+            driver_name = 'chromedriver.exe'
+        else:
+            raise ValueError(f'{platform.system()} is not supported')
+        return os.path.join(os.path.dirname(__file__), 'executables', driver_name)
+
 
 
 class VerifyDateFormatAction(argparse.Action):

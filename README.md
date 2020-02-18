@@ -19,6 +19,7 @@ Automate timewatch updating.
 * Python >= 3.6 
 * [python requirements](requirements.txt)
 * logged in Chrome session
+* Supported chrome is version 75. Other chrome versions will require to replace the chromedriver in executables directory.
 ---
 
 ## Use

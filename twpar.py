@@ -19,7 +19,7 @@ class TimeWatchParametersSingleton(object):
 
     def __new__(cls, *args, **kwargs):
         if not isinstance(cls._instance, cls):
-            cls._instance = object.__new__(cls, *args, **kwargs)
+            cls._instance = object.__new__(cls)
         if not cls._instance.__getattr__('file_path'):
             try:
                 cls._instance.file_path = args[0]

@@ -3,6 +3,8 @@ from math import isclose
 import os
 from fastkml import kml
 import collections
+import webbrowser
+import platform
 
 import twlog
 
@@ -44,8 +46,41 @@ class KMLFile:
         return os.path.join(
             self._file_dir, 'history-' + dt.datetime.strftime(self.file_date, '%Y-%m-%d') + '.kml')
 
+    def _generate_timeline_url(self):
+        """
+        Generates url to download kml file from google based on required date.
+
+        :return str: kml download link for class instance date
+        """
+
+        base_url = r'https://www.google.com/maps/timeline/kml?authuser=0&pb=!1m8!1m3!1'
+        start_date_str = ('i' + str(self.file_date.year)
+                          + '!2i' + str(self.file_date.month - 1)
+                          + '!3i' + str(self.file_date.day))
+        end_date_str = start_date_str
+
+        out = base_url + start_date_str + '!2m3!1' + end_date_str
+        logger.debug('Google Timeline download link is %s', out)
+        return out
+
     def _download_file(self):
-        pass
+        logger.debug('Start download of kml file')
+        chrome_path = "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe"
+        webbrowser.register('chrome', None, webbrowser.BackgroundBrowser(chrome_path), 1)
+        if platform.system() == 'Linux':
+            webbrowser.get('google-chrome').open_new(self._generate_timeline_url())
+        elif platform.system() == 'Windows':
+            webbrowser.get('chrome').open_new(self._generate_timeline_url())
+        else:
+            raise ValueError(f'{platform.system()} is not a supported os')
+
+        file_name = self._generate_file_name()
+        
+        while not os.path.exists(file_name):
+            time.sleep(0.5)
+        else:
+            logger.debug('Finished kml file download: %s', file_name)
+
 
 
 class KMLData:
@@ -73,6 +108,7 @@ class KMLData:
 
     def __exit__(self, *exception):
         pass
+    
     
     def set_workday_hours(self, times):
         pass
