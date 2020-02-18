@@ -1,7 +1,7 @@
 import datetime as dt
 from math import isclose
 import os
-import kml
+from fastkml import kml
 import collections
 
 import twlog
