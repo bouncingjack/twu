@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 This changelog is based on a previous changelog that had to depricated and removed due to the transition to GitHub.
 
 
+## [0.0.2]
+### Added
+* Timewatch login
+* kml file download
+* kml file parsing
+* work detection
+* linux support
+* readme sections
+
+
 ## [0.0.1]
 ### Added
 * Basic flow - still not working
