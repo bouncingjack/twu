@@ -1,5 +1,7 @@
 # imports
 
+import twargs
+
 class Report:
     """
     Represnets the time watch report.
@@ -25,5 +27,6 @@ class ChromeWebDriver:
 
 
 if __name__ == '__main__':
-    # call report actions here
-    pass
+    tw_args = twargs.TWArgs()
+    args = tw_args()
+    
