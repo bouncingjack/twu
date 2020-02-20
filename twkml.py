@@ -66,11 +66,11 @@ class KMLFile:
 
     def _download_file(self):
         logger.debug('Start download of kml file')
-        chrome_path = "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe"
-        webbrowser.register('chrome', None, webbrowser.BackgroundBrowser(chrome_path), 1)
         if platform.system() == 'Linux':
             webbrowser.get('google-chrome').open_new(self._generate_timeline_url())
         elif platform.system() == 'Windows':
+            chrome_path = "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe"
+            webbrowser.register('chrome', None, webbrowser.BackgroundBrowser(chrome_path), 1)
             webbrowser.get('chrome').open_new(self._generate_timeline_url())
         else:
             raise ValueError(f'{platform.system()} is not a supported os')
