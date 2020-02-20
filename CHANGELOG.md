@@ -6,14 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 This changelog is based on a previous changelog that had to depricated and removed due to the transition to GitHub.
 
-## [0.0.5]
+## [0.0.5] - 2020-02-20
 ### Changed
 * default search radius has been updated to 300 meters
 
 ### bugfixes
 * added better execptions (better messages) in case parameters file has missing work lat/long values
 
-## [0.0.4]
+## [0.0.4] - 2020-02-20
 ### Changed
 * Token aquisition is done only once per Timewatch session
 
