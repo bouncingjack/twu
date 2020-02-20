@@ -100,7 +100,7 @@ class KMLData:
         self.chrome_driver = chrome_driver 
         self.work_lat = round(float(self._get_value_from_parameters(params, 'work', 'lat')), 5)
         self.work_long = round(float(self._get_value_from_parameters(params, 'work', 'long')), 5)
-        self.work_location_tolerance = int(self._get_value_from_parameters(params, 'work', 'tolerance'))
+        self.work_location_tolerance = 3
         self.start = None
         self.end = None
 

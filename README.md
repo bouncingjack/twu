@@ -38,8 +38,7 @@ this file should contains the following JSON:
     },
     "work": {
         "lat": "xx.yyyyyy",
-        "long": "xx.yyyyyy", 
-        "tolerance": "2",
+        "long": "xx.yyyyyy"
     }
 }
 
@@ -55,7 +54,6 @@ Make sure you chrome is logged in to your Google account.
 **_user.worker_** - Workder ID No.  
 **_user.pswd_** - password for login.  
 **_work.lat/long_** - lat and long of location of the work place (see [Geo Data](###geo_data))  
-**_work.tolerance_** - multiplier of the precision used to search around work coordinaters. Currently the precision in 100 meters. if multiplier is set to 2, it will 200.
 
 ---
 ### Geo Data
