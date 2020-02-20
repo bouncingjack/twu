@@ -53,7 +53,7 @@ Make sure you chrome is logged in to your Google account.
 **_user.company_** - Company ID No.  
 **_user.worker_** - Workder ID No.  
 **_user.pswd_** - password for login.  
-**_work_** - lat and long of the location of the work place (see [Geo Data](###geo_data))
+**_work.lat/long_** - lat and long of location of the work place (see [Geo Data](###geo_data))  
 
 ---
 ### Geo Data

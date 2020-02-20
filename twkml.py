@@ -97,9 +97,10 @@ class KMLData:
     def __init__(self, download_date: dt.datetime, chrome_driver, params):
         self.download_date = download_date
         self.download_dir = params.parameters['download_dir']
-        self.chrome_driver = chrome_driver
-        self.work_lat = round(float(params.parameters['work']['lat']), 5)
-        self.work_long = round(float(params.parameters['work']['long']), 5)
+        self.chrome_driver = chrome_driver 
+        self.work_lat = round(float(self._get_value_from_parameters(params, 'work', 'lat')), 5)
+        self.work_long = round(float(self._get_value_from_parameters(params, 'work', 'long')), 5)
+        self.work_location_tolerance = 3
         self.start = None
         self.end = None
 
@@ -110,7 +111,12 @@ class KMLData:
     def __exit__(self, *exception):
         pass
     
-    
+    def _get_value_from_parameters(self, params, value_category, value_name):
+        try:
+            return params.parameters[value_category][value_name]
+        except KeyError:
+            raise KeyError(f'{value_category}.{value_name} does not appear in params file')
+
     def set_workday_hours(self, times):
         self.start = format_time(times['start'])
         self.end = format_time(times['end'])
@@ -134,10 +140,11 @@ class KMLData:
             self.kml_data.from_string(doc)
 
 
-    def _is_at_work(self, coordinates):
+    def _is_at_work(self, coordinates, tolerance):
         """
         check if coordinates provided in placemark is withhin a tolerance of work coordinates
         :param lst coordinates: list of coordinates: lat, long, elevation in Decimal degrees notation
+        :params int tolerance: multiplier to determine final search radius around coordinates
         :return: True if provided coordinates are within tolerance of work coordinates
         """
 
@@ -146,8 +153,8 @@ class KMLData:
         # https://en.wikipedia.org/wiki/Decimal_degrees
         precision = pow(10, -3)
 
-        is_close_long = isclose(coordinates[0], self.work_long, abs_tol=precision)
-        is_close_lat = isclose(coordinates[1], self.work_lat, abs_tol=precision)
+        is_close_long = isclose(coordinates[0], self.work_long, abs_tol=tolerance * precision)
+        is_close_lat = isclose(coordinates[1], self.work_lat, abs_tol=tolerance * precision)
 
         return is_close_lat and is_close_long
 
@@ -169,7 +176,7 @@ class KMLData:
         start_times = list()
         end_times = list()
         for p in self._gen_placemarks():
-            if self._is_at_work(p['coords'][0]):
+            if self._is_at_work(p['coords'][0], self.work_location_tolerance):
                 start_times.append(p['t'].begin[0].astimezone())
                 end_times.append(p['t'].end[0].astimezone())
         if len(start_times) == 0 or len(end_times) == 0:
@@ -182,4 +189,3 @@ def format_time(dt):
     Time = collections.namedtuple('Time', ['hour', 'minute'])
     return Time(hour=str(dt.astimezone().hour).zfill(2),
                         minute=str(dt.astimezone().minute).zfill(2))
-
