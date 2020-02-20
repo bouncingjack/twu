@@ -84,18 +84,7 @@ class TimeWatch:
         :param datetime edit_date: date that needs to be edited
         :return str: url for direct edit form for edit_date
         """
-        elems = [e.get_attribute('href') for e in self._driver.find_elements_by_xpath("//a[@href]")]
-        elems = [e for e in elems if 'editwh.php' in e]
-        try:
-            match = re.search(pattern=('(?<=ee\=)\d*(?=\&e)'), string=elems[0])
-        except IndexError as e:
-            raise IndexError('source of html page has no href with token')
-        
-        if match:
-            self._user_cred['token'] = match[0]
-        else:
-            raise ValueError('did not extract token from %s', elems[0])
-
+        self._set_token()
         base_url = 'http://checkin.timewatch.co.il/punch/editwh2.php?ie='
         comp_num = str(self._user_cred['company']) + '&e=' + str(self._user_cred['token']) + '&d='
         start_date = str(edit_date.year) + '-' + str(edit_date.month) + '-' + str(edit_date.day) + '&jd='
@@ -103,5 +92,27 @@ class TimeWatch:
                     + str(self._user_cred['token'])
         return base_url + comp_num + start_date + end_date
 
+    def _set_token(self):
+        """
+        checks if user token has already been processed. if so, does nothing. 
+        if not, this function recovers user token from source of web page and puts it in this class user credential paramters.
+        :return: Nothing
 
+        """
+        if 'token' in self._user_cred.keys():
+            logger.debug('user token already set')
+        else:
+            logger.debug('setting user token')
+
+            elems = [e.get_attribute('href') for e in self._driver.find_elements_by_xpath("//a[@href]")]
+            elems = [e for e in elems if 'editwh.php' in e]
+            try:
+                match = re.search(pattern=('(?<=ee\=)\d*(?=\&e)'), string=elems[0])
+            except IndexError as e:
+                raise IndexError('source of html page has no href with token')
+            
+            if match:
+                self._user_cred['token'] = match[0]
+            else:
+                raise ValueError('did not extract token from %s', elems[0])
 
