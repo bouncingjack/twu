@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 This changelog is based on a previous changelog that had to depricated and removed due to the transition to GitHub.
 
+## [0.0.4]
+### Changed
+* Token aquisition is done only once per Timewatch session
+
+### Bugfix [issue #5](https://github.com/bouncingjack/twu/)
+* Bug - when multiple days are entered. The session does not transition well between edit windows. Therefore the next day recieves the wrong window to search for user token.
+    * Fix - check for token before searching for it. If it exists, do nothing.
+
 ## [0.0.3]
 ### Added
 * Timewatch fill based on timeline or spoofing
