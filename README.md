@@ -82,6 +82,7 @@ should be entered into parameters JSON as
 
 ## Use
 
+
 ### Using Google timeline data
 date range:
     
@@ -95,6 +96,7 @@ equivalently enter the same date in start and end:
 ```
 python timewatch.py --start-date 13-11-2019 --end-date 13-11-2019
 ```
+---
 ### parameters file
 By default the parameters file is `params` in the root of this project (protected by .gitignore).  
 If you wish to change
@@ -102,6 +104,7 @@ If you wish to change
 ```
     python timewatch.py --start-date 01-11-2019 --end-date 22-11-2019 --parameters-file <full path to file>
 ```
+---
 
 ### Random time spoofing (No Google timelne)
 Randomizes arrival and leave time around provided values with +- 43 minutes. 
@@ -116,6 +119,18 @@ python timewatch.py --specific-date 13-11-2019 --force-time 07:30 19:22
 ```
 ---
 
+### Overwrite values
+By default, if the date has already been filled with time values **OR** if there is an excuse filled in, the application **WILL NOT** overwrite the values.
+
+If you want to overwrite time values:
+#### Google timeline
+```
+python timewatch.py --start-date 01-11-2019 --end-date 22-11-2019 --overwrite-values
+```
+#### spoofing
+```
+python timewatch.py --start-date 01-11-2019 --end-date 22-11-2019 --force-time 07:30 19:22 --overwrite-values
+```
 
 ## Style Guide
 

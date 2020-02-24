@@ -30,8 +30,8 @@ class Report:
         if force_times:
             self.force_times = [x.split(':') for x in force_times]
         
-    def __call__(self):
-        with twweb.TimeWatch(chrome_driver=self.chrome_driver, params=params) as tw:
+    def __call__(self, overwrite=False):
+        with twweb.TimeWatch(chrome_driver=self.chrome_driver, params=params, overwrite=overwrite) as tw:
             if self.force_times:
                 for d in self.generate_work_dates():
                     start_time = dt.datetime(
@@ -121,7 +121,7 @@ if __name__ == '__main__':
     
     c = ChromeWebDriver(args.driver_executable)
     r = Report(start_date=args.start_date, end_date=args.end_date, chrome_driver=c, force_times=args.force_times)
-    r()
+    r(overwrite=args.overwrite_values)
     
     logger.info('Finished in {:.2f} seconds'.format(time.time() - t))
     

@@ -1,4 +1,5 @@
 from selenium import webdriver
+from selenium.webdriver.support.ui import Select
 import re
 
 import twlog
@@ -15,10 +16,11 @@ class TimeWatch:
     _user_cred = ''
     _url = r'https://checkin.timewatch.co.il/punch/punch.php'
 
-    def __init__(self, chrome_driver, params):        
+    def __init__(self, chrome_driver, params, overwrite=False):        
         self._user_cred = params.parameters['user']
         self.chrome_driver = chrome_driver
         self._driver = None
+        self.overwrite = overwrite
 
     def __enter__(self):
         self._driver = webdriver.Chrome(self.chrome_driver.driver_path)
@@ -48,20 +50,36 @@ class TimeWatch:
         :param tuple start: the time of the start end of the workday
         :param tuple end: the time of the end of the workday
         :param datetime download_date: the date of the kml data
+        :param Boolean overwrite: if True will overwrite values, if not will leave them as they are
         :return: Nothing
         """
+
+
         self._driver.get(self._generate_specific_date_url(edit_date=download_date))
-        self._enter_value(x_path='ehh', value=start_time.hour)
-        self._enter_value(x_path='emm', value=start_time.minute)
-        self._enter_value(x_path='xhh', value=end_time.hour)
-        self._enter_value(x_path='xmm', value=end_time.minute)
+        if self._has_excuse_for_this_date():
+            excuse = self._get_date_excuse()
+            logger.info('Not editing because date %s has excuse: %s', download_date.strftime('%d-%m-%Y'), excuse)
+        else:
+            self._enter_value(x_path='ehh', value=start_time.hour)
+            self._enter_value(x_path='emm', value=start_time.minute)
+            self._enter_value(x_path='xhh', value=end_time.hour)
+            self._enter_value(x_path='xmm', value=end_time.minute)
 
-        enter = self._driver.find_element_by_xpath(
-            '/html/body/div/span/form/table/tbody/tr[8]/td/div/div[2]/p/table/tbody/tr[9]/td/input')
+            enter = self._driver.find_element_by_xpath(
+                '/html/body/div/span/form/table/tbody/tr[8]/td/div/div[2]/p/table/tbody/tr[9]/td/input')
 
-        enter.click()
+            enter.click()
 
         logger.info('Finished updating for %s', download_date.strftime('%d-%m-%Y'))
+
+    def _has_excuse_for_this_date(self):
+        element_options = Select(self._driver.find_element_by_name('excuse'))
+        return not (element_options.first_selected_option.id == element_options.options[0].id)
+    
+    def _get_date_excuse(self):
+        element_options = Select(self._driver.find_element_by_name('excuse'))
+        return element_options.first_selected_option.text
+
 
     def _enter_value(self, x_path, value):
         """
@@ -72,9 +90,14 @@ class TimeWatch:
         :return:
         """
         element = self._driver.find_element_by_xpath('//*[@id="' + x_path + '0"]')
-        element.clear()
-        element.send_keys(value)
-        logger.debug('Entered %s into element %s', value, element.id)
+        if element.get_attribute('value') and not self.overwrite:
+            logger.debug('Not over-writing current value: %s', element.get_attribute('value'))
+        else:
+            element.clear()
+            element.send_keys(value)
+            logger.debug('Entered %s into element %s', value, element.id)
+
+            
 
     def _generate_specific_date_url(self, edit_date):
         """

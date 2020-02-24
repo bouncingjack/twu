@@ -6,6 +6,7 @@ import collections
 import webbrowser
 import platform
 import time
+import subprocess
 
 import twlog
 
@@ -20,8 +21,7 @@ class KMLFile:
     def __init__(self, file_date, download_dir):
         self.file_date = file_date
         self._file_dir = download_dir
-
-
+        self._download_process = None
 
     def __enter__(self):
         self._download_file()
@@ -33,6 +33,8 @@ class KMLFile:
             logger.debug('file %s was removed', self._generate_file_name())
         except PermissionError:
             logger.debug('unable to remove file %s', self._generate_file_name())
+        logger.debug('attempt to close download file browser window')
+        self._download_process.kill()
 
     def _read_from_file(self):
         with open(file=self._generate_file_name(), mode='rb') as f:
@@ -67,11 +69,16 @@ class KMLFile:
     def _download_file(self):
         logger.debug('Start download of kml file')
         if platform.system() == 'Linux':
-            webbrowser.get('google-chrome').open_new(self._generate_timeline_url())
+            self._download_process = subprocess.Popen(args=('google-chrome', self._generate_timeline_url()),
+                                                      stdout=subprocess.PIPE, 
+                                                      stdin=subprocess.PIPE, 
+                                                      stderr=subprocess.PIPE)
         elif platform.system() == 'Windows':
             chrome_path = "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe"
-            webbrowser.register('chrome', None, webbrowser.BackgroundBrowser(chrome_path), 1)
-            webbrowser.get('chrome').open_new(self._generate_timeline_url())
+            self._download_process = subprocess.Popen(args=(chrome_path, self._generate_timeline_url()),
+                                            stdout=subprocess.PIPE, 
+                                            stdin=subprocess.PIPE, 
+                                            stderr=subprocess.PIPE)
         else:
             raise ValueError(f'{platform.system()} is not a supported os')
 
