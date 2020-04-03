@@ -99,7 +99,7 @@ python timewatch.py --start-date 13-11-2019 --end-date 13-11-2019
 ---
 ### parameters file
 By default the parameters file is `params` in the root of this project (protected by .gitignore).  
-If you wish to change
+If you wish to change:
 
 ```
     python timewatch.py --start-date 01-11-2019 --end-date 22-11-2019 --parameters-file <full path to file>
@@ -131,7 +131,23 @@ python timewatch.py --start-date 01-11-2019 --end-date 22-11-2019 --overwrite-va
 ```
 python timewatch.py --start-date 01-11-2019 --end-date 22-11-2019 --force-time 07:30 19:22 --overwrite-values
 ```
+__________________________
 
+### insert excuse
+This mode allows you to use the excuse list.
+Enter the excuse index as an argument together with date range. 
+The result will be populating all the working dates withing this range with this excuse.
+
+This WILL NOT populate work times - ONLY select the excuse from the list.
+
+The excuse list is different between companies.
+
+The default mode is to NOT use this setting.
+```
+python timewatch.py --start-date 01-11-2019 --end-date 22-11-2019 --excuse 7
+```
+
+_________________
 ## Style Guide
 
 We are following the [google python style guide](https://google.github.io/styleguide/pyguide.html).
