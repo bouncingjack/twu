@@ -44,13 +44,14 @@ class TimeWatch:
             '//*[@id="cpick"]/table/tbody/tr[1]/td/div/div[2]/p/table/tbody/tr[4]/td[2]/input').click()
         logger.info('Logged in for worker %s', self._user_cred['worker'])
 
-    def edit_single_date(self, start_time, end_time, download_date):
+    def edit_single_date(self, start_time, end_time, download_date, excuse=None):
         """
         Enter values into a single date form
         :param tuple start: the time of the start end of the workday
         :param tuple end: the time of the end of the workday
         :param datetime download_date: the date of the kml data
         :param Boolean overwrite: if True will overwrite values, if not will leave them as they are
+        :param enum excuse: index of the excuse that will be used. default is None
         :return: Nothing
         """
 
@@ -59,6 +60,9 @@ class TimeWatch:
         if self._has_excuse_for_this_date():
             excuse = self._get_date_excuse()
             logger.info('Not editing because date %s has excuse: %s', download_date.strftime('%d-%m-%Y'), excuse)
+        if excuse:
+            self._set_excuse_value(excuse)
+            logger.info('Set excuse No. %d for date %s', excuse, download_date.strftime('%d-%m-%Y'))
         else:
             self._enter_value(x_path='ehh', value=start_time.hour)
             self._enter_value(x_path='emm', value=start_time.minute)
@@ -80,6 +84,9 @@ class TimeWatch:
         element_options = Select(self._driver.find_element_by_name('excuse'))
         return element_options.first_selected_option.text
 
+    def _set_excuse_value(self, excuse_index):
+        element_options = Select(self._driver.find_element_by_name('excuse'))
+        element_options.select_by_index(excuse_index)
 
     def _enter_value(self, x_path, value):
         """
@@ -98,7 +105,6 @@ class TimeWatch:
             logger.debug('Entered %s into element %s', value, element.id)
 
             
-
     def _generate_specific_date_url(self, edit_date):
         """
         generate url for specific date edit form in the TimeWatch webpage.

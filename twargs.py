@@ -25,6 +25,8 @@ class TWArgs:
                                  help='enter forced start time (at correct time zone) in HH:MM format')
         self.parser.add_argument('--overwrite-values', dest='overwrite_values', action='store_true', default=False,
                                 help='If true will overwrite values in website, by default false')
+        self.parser.add_argument('--excuse-index', dest='excuse_index', type=int,
+                                 help='full path to chrome driver executable')
 
     def __call__(self):
         return self.parse_args()
