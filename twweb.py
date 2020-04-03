@@ -57,19 +57,20 @@ class TimeWatch:
 
 
         self._driver.get(self._generate_specific_date_url(edit_date=download_date))
-        if self._has_excuse_for_this_date():
+        if self._has_excuse_for_this_date() and not self.overwrite:
             excuse = self._get_date_excuse()
             logger.info('Not editing because date %s has excuse: %s', download_date.strftime('%d-%m-%Y'), excuse)
-        elif excuse:
-            self._set_excuse_value(excuse)
-            logger.info('Set excuse No. %d for date %s', excuse, download_date.strftime('%d-%m-%Y'))
-            
-            self._click_enter()
+
         else:
-            self._enter_value(x_path='ehh', value=start_time.hour)
-            self._enter_value(x_path='emm', value=start_time.minute)
-            self._enter_value(x_path='xhh', value=end_time.hour)
-            self._enter_value(x_path='xmm', value=end_time.minute)
+            if excuse:
+                self._set_excuse_value(excuse)
+                logger.info('Set excuse No. %d for date %s', excuse, download_date.strftime('%d-%m-%Y'))
+            
+            else:
+                self._enter_value(x_path='ehh', value=start_time.hour)
+                self._enter_value(x_path='emm', value=start_time.minute)
+                self._enter_value(x_path='xhh', value=end_time.hour)
+                self._enter_value(x_path='xmm', value=end_time.minute)
 
             self._click_enter()
 
@@ -80,7 +81,7 @@ class TimeWatch:
             '/html/body/div/span/form/table/tbody/tr[8]/td/div/div[2]/p/table/tbody/tr[9]/td/input')
 
         enter.click()
-        
+
     def _has_excuse_for_this_date(self):
         element_options = Select(self._driver.find_element_by_name('excuse'))
         return not (element_options.first_selected_option.id == element_options.options[0].id)
