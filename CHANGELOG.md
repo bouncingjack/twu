@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 This changelog is based on a previous changelog that had to depricated and removed due to the transition to GitHub.
 
+## [0.1.3] - 2020-05-02
+### Fixed
+* wrong logic implemented - excuse selection was outside if clause - never holiday
+
+## [0.1.2] - 2020-05-02
+### Changed
+* overwrite flag for hours deletes all hours on record for the day.
+
 ## [0.1.1] - 2020-05-02
 ### Changed
 * vaction day description (text) will be handeled using direct ascii values
