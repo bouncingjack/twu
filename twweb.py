@@ -64,7 +64,8 @@ class TimeWatch:
         
         self._driver.get(self._generate_specific_date_url(edit_date=download_date))
         self.set_excuse(excuse_index=excuse)
-        self._fill_hours(start_time=start_time, end_time=end_time)      
+        if not (self.is_holdiay_eve() or self.is_holiday()):
+            self._fill_hours(start_time=start_time, end_time=end_time)      
         self._click_enter()
 
         logger.info('Finished updating for %s', download_date.strftime('%d-%m-%Y'))
@@ -108,6 +109,8 @@ class TimeWatch:
         will only set if the value is empty or overwrite is turned on
 
         :param int excuse_index: index (zero based) of the excuse to set
+
+        :return Boolean: True if need hours , false if not
         """
 
         if self.overwrite or not self._has_excuse_for_this_date():
@@ -116,15 +119,15 @@ class TimeWatch:
                 self._clear_all_hours()
                 self._set_excuse_value(int(self._holiday_index['vacation_index']))
                 logger.info('Set date as vacation')
-            
-            if self.is_holdiay_eve():
+            elif self.is_holdiay_eve():
                 self._clear_all_hours()
                 self._set_excuse_value(int(self._holiday_index['eve_index']))
                 logger.info('Set date as holiday eve')
-
-            self._set_excuse_value(excuse_index)
+            else:
+                self._set_excuse_value(excuse_index)
         else:
             logger.debug('Not setting excuse because overwrite is not allowed')
+
 
     def _set_excuse_value(self, excuse_index):
         element_options = Select(self._driver.find_element_by_name('excuse'))
