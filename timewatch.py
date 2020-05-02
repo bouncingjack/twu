@@ -45,19 +45,18 @@ class Report:
                     start_time += dt.timedelta(minutes=randint(-43,43))
                     end_time += dt.timedelta(minutes=randint(-43,43))
                     tw.edit_single_date(
-                        start_time=twkml.format_time(start_time),
-                        end_time=twkml.format_time(end_time),
-                        download_date=d)
-            elif excuse:
-                for d in self.generate_work_dates():
-                    tw.edit_single_date(start_time=None, end_time=None, download_date=d, excuse=excuse)
+                        start_time=start_time, 
+                        end_time=end_time, 
+                        download_date=d, 
+                        excuse=excuse)
             else:
                 for k in self._gen_kml():
                     tw.edit_single_date(
                         start_time=k.start, 
                         end_time=k.end, 
-                        download_date=k.download_date)
-    
+                        download_date=k.download_date, 
+                        excuse=excuse)
+        
     def generate_work_dates(self):
         """
         generator of dates in sequence between two given dates.\n

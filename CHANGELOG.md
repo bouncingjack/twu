@@ -6,6 +6,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 This changelog is based on a previous changelog that had to depricated and removed due to the transition to GitHub.
 
+## [0.1.1] - 2020-05-02
+### Changed
+* vaction day description (text) will be handeled using direct ascii values
+
+## [0.1.0] - 2020-05-02
+### Changed
+* excuses are added independant of hours. 
+    * you may add and excuse with or without hours directly by modifying the cli flag
+
+### Added
+* holiday check - checks if the day in question is a holiday or a holiday eve and fills out according to parameters
+
 ## [0.0.6] - 2020-02-24
 ### Changed
 * chrome now opens with a subprocess and not webbrowser package (is order to facilitage force killing of the process).

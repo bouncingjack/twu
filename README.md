@@ -78,7 +78,33 @@ should be entered into parameters JSON as
 
 ---
 
+### holiday index
+This part of the parameters data adds the indexes for holdiay and holiday eve in the excuse list in the site.
 
+`vacation_index` and `eve_index` are the indeces (zero based) of the respective option on the excuse select box
+
+`vacation_text` and `eve_text` is the textual description of this day in ascii notation.
+Using ascii in order to enable other languages other than english without (hopefully) encoding problems.
+
+You can find ascii encoding our using `ord`:
+```
+description = 'vacation day'
+[ord(x) for x in description]
+
+>>>
+[118, 97, 99, 97, 116, 105, 111, 110, 32, 100, 97, 121]
+```
+
+
+if not existing will set to the following defaults:
+```
+"holiday_index":{
+    "vacation_index": "3",
+    "vacation_text": ["1495", "1490"],
+    "eve_index": "17",
+    "eve_text": ["1506", "1512", "1489", "32", "1495", "1490"]
+}
+```
 
 ## Use
 
@@ -134,11 +160,9 @@ python timewatch.py --start-date 01-11-2019 --end-date 22-11-2019 --force-time 0
 __________________________
 
 ### insert excuse
-This mode allows you to use the excuse list.
+Add excuse (with or without hours)
 Enter the excuse index as an argument together with date range. 
 The result will be populating all the working dates withing this range with this excuse.
-
-This WILL NOT populate work times - ONLY select the excuse from the list.
 
 The excuse list is different between companies.
 
