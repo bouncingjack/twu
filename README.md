@@ -1,8 +1,12 @@
 # TimeWatch Automatic Filler
 
 Automate timewatch updating.
-* Based on Google Timeline
-* Based on randomized entry and exit times.
+* single day/batch
+* Mode 1: Based on actual Google Timeline
+* Mode 2: Based on randomized entry and exit times.
+* Automatically update holidays and holiday eves
+* Allow to insert an excuse with/without hours for each day
+
 
 # TOC
 * [Requirements](##Requirements)  
@@ -39,6 +43,12 @@ this file should contains the following JSON:
     "work": {
         "lat": "xx.yyyyyy",
         "long": "xx.yyyyyy"
+    },
+    "holiday_index":{
+        "vacation_index": x,
+        "vacation_text": ["y", "z",],
+        "eve_index": "k",
+        "eve_text": ["m", "n", ...]
     }
 }
 
@@ -53,7 +63,12 @@ Make sure you chrome is logged in to your Google account.
 **_user.company_** - Company ID No.  
 **_user.worker_** - Workder ID No.  
 **_user.pswd_** - password for login.  
-**_work.lat/long_** - lat and long of location of the work place (see [Geo Data](###geo_data))  
+[**_work.lat/long_**](###geo_data) - lat and long of location of the work place
+[**_holiday_index.vaction_index_**](#holiday-index) - index in the excuse list for a holiday option
+[**_holiday_index.eve_index_**](#holiday-index) - index in the excuse list for holiday eve option
+[**_holiday_index.vacation_text_**](#holiday-index) - textual description of the day for holiday (list of ascii values)  
+[**_holiday_index.eve_text_**](#holiday-index) - textual description of the day for holiday eve (list of ascii values)  
+
 
 ---
 ### Geo Data
@@ -171,6 +186,11 @@ The default mode is to NOT use this setting.
 python timewatch.py --start-date 01-11-2019 --end-date 22-11-2019 --excuse 7
 ```
 
+## Real-world Example
+Craete a spoof of times with an excuse - overwrite values
+```
+python timewatch.py --start-date 01-04-2019 --end-date 30-04-2019 --overwrite-values --excuse 16 --force-times 07:00 17:30
+```
 _________________
 ## Style Guide
 
