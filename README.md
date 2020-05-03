@@ -1,8 +1,12 @@
 # TimeWatch Automatic Filler
 
 Automate timewatch updating.
-* Based on Google Timeline
-* Based on randomized entry and exit times.
+* single day/batch
+* Mode 1: Based on actual Google Timeline
+* Mode 2: Based on randomized entry and exit times.
+* Automatically update holidays and holiday eves
+* Allow to insert an excuse with/without hours for each day
+
 
 # TOC
 * [Requirements](##Requirements)  
