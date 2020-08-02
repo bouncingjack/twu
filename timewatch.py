@@ -22,7 +22,6 @@ class Report:
     chrome_driver = None
     force_times = None
 
-    
     def __init__(self, start_date, end_date, chrome_driver, force_times=None):
         self.start_date = start_date
         self.end_date = end_date
@@ -109,21 +108,4 @@ class ChromeWebDriver:
         """
         self.driver_path = executable_path
 
-
-
-
-if __name__ == '__main__':
-    logger.info('Start')
-    
-    t = time.time()
-    a = twargs.TWArgs()
-
-    args = a()
-    params = twpar.TimeWatchParametersSingleton(args.parameters_file) #TODO remove parameters as singleton
-    
-    c = ChromeWebDriver(args.driver_executable)
-    r = Report(start_date=args.start_date, end_date=args.end_date, chrome_driver=c, force_times=args.force_times)
-    r(overwrite=args.overwrite_values, excuse=args.excuse_index)
-    
-    logger.info('Finished in {:.2f} seconds'.format(time.time() - t))
     

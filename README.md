@@ -113,12 +113,12 @@ description = 'vacation day'
 
 if not existing will set to the following defaults:
 ```
-"holiday_index":{
-    "vacation_index": "3",
-    "vacation_text": ["1495", "1490"],
-    "eve_index": "17",
-    "eve_text": ["1506", "1512", "1489", "32", "1495", "1490"]
-}
+"holiday": {
+    "holdiay_eve_index": 3,
+    "holiday_eve_text": [1506, 1512, 1489, 32, 1495, 1490],
+    "holiday_index": 17,
+    "holiday_text": [1495, 1490]
+  }
 ```
 
 ## Use
@@ -189,7 +189,7 @@ python timewatch.py --start-date 01-11-2019 --end-date 22-11-2019 --excuse 7
 ## Real-world Example
 Craete a spoof of times with an excuse - overwrite values
 ```
-python timewatch.py --start-date 01-04-2019 --end-date 30-04-2019 --overwrite-values --excuse 16 --force-times 07:00 17:30
+python timewatch.py --start-date 01-04-2019 --end-date 30-04-2019 --overwrite-values --excuse-index 16 --force-times 07:00 17:30
 ```
 _________________
 ## Style Guide
@@ -199,6 +199,4 @@ We are following the [google python style guide](https://google.github.io/styleg
 Docstrings should also follow google's style guide, see examples in [google docstring example](http://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html).
 
 All the modules should also follow [pep8](https://www.python.org/dev/peps/pep-0008/) (just use pyCharm it gives all the errors and warnings about pep8).
-
-
 

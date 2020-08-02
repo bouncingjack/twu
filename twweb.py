@@ -77,11 +77,18 @@ class TimeWatch:
                 
                 self._enter_value(element_id='ehh', value=start_time.hour)
                 self._enter_value(element_id='emm', value=start_time.minute)
-                logger.debug('Entered entrance time: %d:%d', start_time.hour, start_time.minute)
+                if isinstance(start_time.hour, str):
+                    logger.debug('Entered entrance time: %s:%s', start_time.hour, start_time.minute)
+                else:
+                    logger.debug('Entered entrance time: %d:%d', start_time.hour, start_time.minute)
                 
                 self._enter_value(element_id='xhh', value=end_time.hour)
                 self._enter_value(element_id='xmm', value=end_time.minute)
-                logger.debug('Entered exit time: %d:%d', end_time.hour, end_time.minute)
+                if isinstance(start_time.hour, str):
+                    logger.debug('Entered exit time: %s:%s', end_time.hour, end_time.minute)
+                else:
+                    logger.debug('Entered exit time: %d:%d', end_time.hour, end_time.minute)
+
         else:
             logger.debug('Not filling in hours because overwrite is not allowed')
 
@@ -113,7 +120,8 @@ class TimeWatch:
         :return Boolean: True if need hours , false if not
         """
 
-        if self.overwrite or not self._has_excuse_for_this_date():
+
+        if self.overwrite or (not self._has_excuse_for_this_date()):
             
             if self.is_holiday():
                 self._clear_all_hours()
@@ -130,9 +138,10 @@ class TimeWatch:
 
 
     def _set_excuse_value(self, excuse_index):
-        element_options = Select(self._driver.find_element_by_name('excuse'))
-        element_options.select_by_index(excuse_index)
-        logger.debug('Set excuse %s', element_options.options[excuse_index].text)
+        if excuse_index:
+            element_options = Select(self._driver.find_element_by_name('excuse'))
+            element_options.select_by_index(excuse_index)
+            logger.debug('Set excuse %s', element_options.options[excuse_index].text)
 
     def is_holiday(self):
         return set(self._get_date_text_ascii()) ==  set([int(x) for x in self._holiday_index['vacation_text']])
@@ -196,7 +205,7 @@ class TimeWatch:
             elems = [e.get_attribute('href') for e in self._driver.find_elements_by_xpath("//a[@href]")]
             elems = [e for e in elems if 'editwh.php' in e]
             try:
-                match = re.search(pattern=('(?<=ee\=)\d*(?=\&e)'), string=elems[0])
+                match = re.search(pattern=(r'(?<=ee\=)\d*(?=\&e)'), string=elems[0])
             except IndexError as e:
                 raise IndexError('source of html page has no href with token')
             

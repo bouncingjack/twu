@@ -28,11 +28,8 @@ class TWArgs:
         self.parser.add_argument('--excuse-index', dest='excuse_index', type=int,
                                  help='full path to chrome driver executable')
 
-    def __call__(self):
-        return self.parse_args()
-
-    def parse_args(self):
-        args_output = self.parser.parse_args()
+    def parse_args(self, argv):
+        args_output = self.parser.parse_args(args=argv[1::])
 
         if args_output.start_date and args_output.end_date:
             if args_output.start_date > args_output.end_date:
