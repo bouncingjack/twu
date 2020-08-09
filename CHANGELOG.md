@@ -9,7 +9,7 @@ This changelog is based on a previous changelog that had to depricated and remov
 ##[1.0.0] - 2020-08-09
 ### Changed
 #### BREAKING CHANGES
-* Added automatic setup. Please review [install section][README.md#install]
+* Added automatic setup. Please review [install section](README.md#install)
 * Params file structure has changed, please review [params section](README.md#params) and change accordingly.
 * Removed obsolete input arguments. please review [usage section](README.md#usage)
 

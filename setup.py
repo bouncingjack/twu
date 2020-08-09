@@ -10,7 +10,7 @@ params_default = {
     'user': {
         'company': 'xxx',
         'worker': 'yyy',
-        'pawd': 'zzz'
+        'pswd': 'zzz'
     },
     'work': {
         'location': {
