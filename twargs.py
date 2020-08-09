@@ -11,22 +11,14 @@ class TWArgs:
         # TODO add verification class for month and year
         self.parser = argparse.ArgumentParser(
             description='Build and import projects')
-        self.parser.add_argument('--specific-date', dest='specific_date', action=VerifyDateFormatAction,
-                                 help='enter start date (included) in DD-MM-YYYY format')
         self.parser.add_argument('--start-date', dest='start_date', action=VerifyDateFormatAction,
                                  help='enter start date (included) in DD-MM-YYYY format')
         self.parser.add_argument('--end-date', dest='end_date', action=VerifyDateFormatAction,
                                  help='enter end date (included) in DD-MM-YYYY format')
-        self.parser.add_argument('--parameters-file', dest='parameters_file', default=os.path.join(os.path.dirname(__file__), 'params'),
+        self.parser.add_argument('--parameters-file',
+                                 dest='parameters_file',
+                                 default=os.path.join(os.path.dirname(__file__), 'params', 'params.json'),
                                  help='full path to local parameters file')
-        self.parser.add_argument('--driver-executable', dest='driver_executable', default=self.driver_executable_select(),
-                                 help='full path to chrome driver executable')
-        self.parser.add_argument('--force-times', dest='force_times', default=None, nargs='*', type=str,
-                                 help='enter forced start time (at correct time zone) in HH:MM format')
-        self.parser.add_argument('--overwrite-values', dest='overwrite_values', action='store_true', default=False,
-                                help='If true will overwrite values in website, by default false')
-        self.parser.add_argument('--excuse-index', dest='excuse_index', type=int,
-                                 help='full path to chrome driver executable')
 
     def parse_args(self, argv):
         args_output = self.parser.parse_args(args=argv[1::])
@@ -35,21 +27,7 @@ class TWArgs:
             if args_output.start_date > args_output.end_date:
                 raise ValueError('start date is after end date')
 
-        if args_output.specific_date:
-            args_output.start_date = args_output.specific_date
-            args_output.end_date = args_output.specific_date
-
         return args_output
-    
-    def driver_executable_select(self):
-        if platform.system() == 'Linux':
-            driver_name = 'chromedriver'
-        elif platform.system() == 'Windows':
-            driver_name = 'chromedriver.exe'
-        else:
-            raise ValueError(f'{platform.system()} is not supported')
-        return os.path.join(os.path.dirname(__file__), 'executables', driver_name)
-
 
 
 class VerifyDateFormatAction(argparse.Action):

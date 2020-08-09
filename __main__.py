@@ -15,7 +15,7 @@ a = twargs.TWArgs()
 args = a.parse_args(sys.argv)
 
 
-with web.Timewatch() as tw:
+with web.Timewatch(params_file=args.parameters_file) as tw:
     for d in work.date_list(start_date=args.start_date, end_date=args.end_date):
         tw.update_date(d)
 

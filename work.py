@@ -1,3 +1,8 @@
+"""
+This module abstract a single work date and deals with all the aspects of extracting data
+and meta data about and from this specific date: gps data, determining if work day, holiday etc.
+"""
+
 import os
 import datetime as dt
 import platform
@@ -6,6 +11,8 @@ from math import isclose
 import subprocess
 import time
 from fastkml import kml
+import calendar
+import re
 
 import twlog
 
@@ -23,8 +30,18 @@ class WorkDate:
         self._work_location = work_location
         logger.debug('Initialized date %s', date.strftime('%Y-%m-%d'))
 
-    def query_work_date(self):
-        if self.is_work_day():
+    def query_work_date(self, work_day, weekend):
+        """
+        Checks whether current date has gps data or not.
+        Downloads a kml file from google timeline.
+        mode is set to 'gps' if the kml file indicated that were at work at current date.
+        Otherwise `mode` will be 'non-gps'.
+        In case the day a weekend, mode will be set to 'weekend'
+        :param dict work_day: workday configuration from the JSON parameters file
+        :param list weekend: list of the names of the days in the weekend
+        :return:
+        """
+        if self.is_work_day(weekend):
             logger.debug('Data %s is a work day', self._date.strftime('%Y-%m-%d'))
             with KMLFile(file_date=self._date, download_dir=self._download_dir) as f:
                 kml_data = f.read()
@@ -35,28 +52,48 @@ class WorkDate:
                 return k.get_work_times(work_location=self._work_location)
             else:
                 self.mode = 'non_gps'
-                self.excuse = 16
                 logger.debug('Date %s has no valid gps data - not in office', self._date.strftime('%Y-%m-%d'))
-                return self.spoof_times(
-                    start={'hour': 8, 'minute': 0},
-                    end={'hour': 17, 'minute': 0})
+                return self.spoof_times(work_day=work_day)
         else:
             self.mode = 'weekend'
 
-    def is_work_day(self):
-        return not self._date.weekday() in [4, 5]
+    def is_work_day(self, weekend):
+        """
+        Check is current date is a weekday based on provided data in the parameters file.
+        :param list weekend: Names of the weekend days
+        :return: bool. True if current date is part of :param: weekend.
+        """
+        return not self._date.weekday() in [ii for ii, x in enumerate(list(calendar.day_name)) if x in weekend]
 
-    def spoof_times(self, start: dict, end: dict):
+    def spoof_times(self, work_day: dict) -> dict:
+        """
+        Randomizes start and end times in the day.
+        Randomization is based on [work][work_day] parameters.
+
+        Randomize starting from the minimal start time with 0-2 hours.
+        Randomize end such that work day won't be longer than max length day [hours] or shorter than nominal-1 [hours]
+        or that is won't end past maximal end time, as provided in the parameters file.
+
+        :param dict work_day: the parsed input from JSON parameters file section [work][work_day]
+        :return: dict with start datetime object and end datetime object representing the start/end of workday
+        """
+        ptn = r'(?P<hour>\d+)\:(?P<minute>\d+)'
+        match_min = re.search(pattern=ptn, string=work_day['minimal_start_time'])
+        match_max = re.search(pattern=ptn, string=work_day['maximal_end_time'])
         start_time = dt.datetime(
             year=self._date.year, month=self._date.month, day=self._date.day,
-            hour=int(start['hour']),
-            minute=int(start['minute']))
-        end_time = dt.datetime(
-            year=self._date.year, month=self._date.month, day=self._date.day,
-            hour=int(end['hour']),
-            minute=int(end['minute']))
-        start_time += dt.timedelta(minutes=randint(-23, 23))
-        end_time += dt.timedelta(minutes=randint(-23, 23))
+            hour=int(match_min.group('hour')) + randint(0, 2),
+            minute=int(randint(0, 59)))
+        end_time = start_time
+        delta = end_time - start_time
+        while delta.seconds // 3600 > work_day['max_length'] or \
+                delta.seconds // 3600 < work_day['nominal_length'] - 1 or \
+                end_time.hour > int(match_max.group('hour')):
+            end_time = dt.datetime(
+                year=self._date.year, month=self._date.month, day=self._date.day,
+                hour=start_time.hour + work_day['nominal_length'] + randint(-1, 1),
+                minute=int(randint(0, 59)))
+            delta = end_time - start_time
 
         return {'start': start_time, 'end': end_time}
 
@@ -87,6 +124,10 @@ class KMLFile:
         self._download_process.kill()
 
     def read(self):
+        """
+        read kml data from the saved file into a raw string
+        :return:
+        """
         with open(file=self._generate_file_name(), mode='rb') as f:
             return f.read()
 
@@ -182,10 +223,15 @@ class KMLData:
 
     def get_work_times(self, work_location):
         """
-        generator for times at work
-        :param string: end or start of day
+        Parses all the placemarks in the kml data and extract coordinates of each mark.
+        Coordinates are measured for distance from work location (provided :param:)
+        Each placemark that is deemed to be close enough to the work location is measured for
+        time at arrival and departure.
+        The largest difference (first arrival and last departure) are returned as total time spent at work.
 
-        :yields: a time point (start or end) that is verfied at work
+        :param dict work_location: lat and long work location - from JSON paramters
+
+        :returns: dict minimal start time and maximal end time
         """
         start_times = list()
         end_times = list()
@@ -214,7 +260,8 @@ def date_list(start_date, end_date):
 
 def is_within_distance(work_location, coordinates, tolerance):
     """
-    check if coordinates provided in placemark is withhin a tolerance of work coordinates
+    Checks if coordinates provided are withhin a tolerance of the work location.
+
     :param lst coordinates: list of coordinates: lat, long, elevation in Decimal degrees notation
     :param int tolerance: multiplier to determine final search radius around coordinates
     :param dict work_location: lat and long of work location
