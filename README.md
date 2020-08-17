@@ -28,6 +28,7 @@ pip install -e <project path>
 ```
 
 After the installation - Update the parameters in the [Parameters File](params/params.json) according to the [Parameters section](#parameters)
+> If you already have a parameters file whos version does not fit the current params file version. A new one will be created and the old one will be save under `params_archive.json`
 
 ### Parameters
 
