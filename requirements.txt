@@ -1,3 +1,2 @@
 fastkml
 selenium
-pylint

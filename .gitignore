@@ -4,9 +4,15 @@ __pycache__/**
 # vscode
 .vscode/
 
+# PyCharm
+.idea/
+
 # virtual environments
 venv/**
 
+*egg-info/**
+
 # specific files
-params
+params.json
 excuse_list
+debug.log

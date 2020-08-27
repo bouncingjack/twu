@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 This changelog is based on a previous changelog that had to depricated and removed due to the transition to GitHub.
 
+##[1.0.0] - 2020-08-09
+### Changed
+#### BREAKING CHANGES
+* Added automatic setup. Please review [install section](README.md#install)
+* Params file structure has changed, please review [params section](README.md#params) and change accordingly.
+* Removed obsolete input arguments. please review [usage section](README.md#usage)
+
+
 ## [0.1.3] - 2020-05-02
 ### Fixed
 * wrong logic implemented - excuse selection was outside if clause - never holiday

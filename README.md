@@ -1,17 +1,12 @@
 # TimeWatch Automatic Filler
 
 Automate timewatch updating.
-* single day/batch
-* Mode 1: Based on actual Google Timeline
-* Mode 2: Based on randomized entry and exit times.
 * Automatically update holidays and holiday eves
-* Allow to insert an excuse with/without hours for each day
+* Automatically decides when at office and when to inset excuse
 
 
-# TOC
-* [Requirements](##Requirements)  
-* [Install](##Install)  
-* [Use](##Use)
+[TOC]
+
 ---
 
 
@@ -25,83 +20,72 @@ Automate timewatch updating.
 
 
 ## Install
-Install all required pacakges pacakges
+> **Optional** [Create and activate a new virtual environment](https://docs.python.org/3/library/venv.html#creating-virtual-environments) 
+
+Install local package using pip and local path
 ```
-pip install -r requirements.txt
+pip install -e <project path>
 ```
-Create a parameters file (name and location are up to you).  
-this file should contains the following JSON:  
-(parameters are explained in the section [Params](#params))
-```
-{
-    "download_dir": "<full path>",
-    "user": {
-        "company": "x*", 
-        "worker": "y*",
-        "pswd": "p*"
-    },
-    "work": {
-        "lat": "xx.yyyyyy",
-        "long": "xx.yyyyyy"
-    },
-    "holiday_index":{
-        "vacation_index": x,
-        "vacation_text": ["y", "z",],
-        "eve_index": "k",
-        "eve_text": ["m", "n", ...]
-    }
-}
 
-``` 
----
-### Google
-Make sure you chrome is logged in to your Google account.
+After the installation - Update the parameters in the [Parameters File](params/params.json) according to the [Parameters section](#parameters)
+> If you already have a parameters file whos version does not fit the current params file version. A new one will be created and the old one will be save under `params_archive.json`
 
----
-### Params
-**_download_dir_** - Download path for kml files from google  
-**_user.company_** - Company ID No.  
-**_user.worker_** - Workder ID No.  
-**_user.pswd_** - password for login.  
-[**_work.lat/long_**](###geo_data) - lat and long of location of the work place
-[**_holiday_index.vaction_index_**](#holiday-index) - index in the excuse list for a holiday option
-[**_holiday_index.eve_index_**](#holiday-index) - index in the excuse list for holiday eve option
-[**_holiday_index.vacation_text_**](#holiday-index) - textual description of the day for holiday (list of ascii values)  
-[**_holiday_index.eve_text_**](#holiday-index) - textual description of the day for holiday eve (list of ascii values)  
+### Parameters
+
+* `download_dir`: The full path to the default download directory of the pc.
+ If removed, the default will be  `C:\Users\<user>\Downloads (windows)` or `/home/<user>/Downloads (linux)`
+
+* `user` - login information
+    * `company`  - company No.
+    * `worker` - worker ID number
+    * `pswd` - password
+
+* `work` This is information about the work place: 
+    * `location`: lat and long (see [Geo Data](#geo_data))
+    * `work_day`: information regarding the work day
+        * `max_length`: maximum length (in hours) of the workday
+        * `nominal_length`: nominal length (in hours) of the workday
+        * `minimal_start_time`: minimal start time (will never set arrival before this time)
+        * `maximal_end_time`: maximal end time (will never set departure after this time)
+* `home`: information about home
+    * `work_from_home_excuse_index`: index of the option for setting the excuse to working from home - this may change from company to company.
+* `holdiay`: information about how to recognize holiday. This is meant for non-english parts of the webpage. In order to compare - utilize the ascii representation of each character.
+    * `holiday_eve_index`: the index of the holiday **eve** option
+    * `holiday_eve_text`: ascii for the holiday **eve** option text,
+    * `holiday_index`: the index of the holiday  option
+    * `holiday_text`: ascii for the holiday option text,
 
 
----
-### Geo Data
-  
-Go to [Google Maps](https://www.google.co.il/maps) 
-and extract the exact coordinates from the location:
+## Time at work calculation
+#### GPS
+Based on Google timeline data.
+Requires a logged-in chrome session (until further notice).
+GPS data is taken from the parsed KML file that can be downloaded per a single date which 
+describes a single day timeline data.
 
-    right click on the address:
-    whats here?
-    
-Select Decimal Gegrees notation:
-    
-    32.166525, 34.812895 
+#### Non-GPS
+If GPS data did not indicate that user was a work, the mode switches to non-gps.
+This means that either eve/holiday or work from home which requires setting an appropriate excuse.
 
-should be entered into parameters JSON as
-    
-    "work": {
-        "lat": "32.166525",
-        "long": "34.812895"
-    }
-    
+#### Holidays
+Holidays are detected from the headline in the single day edit menu in the web page.
+The headline is compared to the ascii representation of the specific language in which the web page is written.
+Holidays are set according the index (zero based) provided in the parameters (index of the correct option in the drop down menu when manually setting).
 
----
+i.e:
+If clicking on the drop down menu in the single day edit web-page is:
+* hi
+* holiday_eve
+* holiday
+* bye
 
-### holiday index
-This part of the parameters data adds the indexes for holdiay and holiday eve in the excuse list in the site.
+Then 
+* `holiday_index = 3` 
+* `holiday_eve_index = 2`
+* `holiday_text = [104, 111, 108, 105, 100, 97, 121]`
+* `holiday_eve_text = [104, 111, 108, 105, 100, 97, 121, 95, 101, 118, 101]`
 
-`vacation_index` and `eve_index` are the indeces (zero based) of the respective option on the excuse select box
-
-`vacation_text` and `eve_text` is the textual description of this day in ascii notation.
-Using ascii in order to enable other languages other than english without (hopefully) encoding problems.
-
-You can find ascii encoding our using `ord`:
+You can find ascii encoding our using the built-in function `ord()`:
 ```
 description = 'vacation day'
 [ord(x) for x in description]
@@ -109,88 +93,51 @@ description = 'vacation day'
 >>>
 [118, 97, 99, 97, 116, 105, 111, 110, 32, 100, 97, 121]
 ```
-
-
-if not existing will set to the following defaults:
+---
+### Geo Data
+  
+Go to [Google Maps](https://www.google.co.il/maps) 
+and extract the exact coordinates from the location:
 ```
-"holiday_index":{
-    "vacation_index": "3",
-    "vacation_text": ["1495", "1490"],
-    "eve_index": "17",
-    "eve_text": ["1506", "1512", "1489", "32", "1495", "1490"]
-}
+right click on the address:
+whats here?
 ```
 
-## Use
+Select Decimal Degrees notation:
+
+|Lat|Long|
+|:----|:----|
+|32.166525|32.166525|
 
 
-### Using Google timeline data
-date range:
+should be entered into parameters JSON as
     
-    python timewatch.py --start-date 01-11-2019 --end-date 22-11-2019
-
-single specific date (overrides --start-date/--end-date):
-```
-python timewatch.py --specific-date 13-11-2019
-```
-equivalently enter the same date in start and end:
-```
-python timewatch.py --start-date 13-11-2019 --end-date 13-11-2019
-```
----
-### parameters file
-By default the parameters file is `params` in the root of this project (protected by .gitignore).  
-If you wish to change:
-
-```
-    python timewatch.py --start-date 01-11-2019 --end-date 22-11-2019 --parameters-file <full path to file>
-```
----
-
-### Random time spoofing (No Google timelne)
-Randomizes arrival and leave time around provided values with +- 43 minutes. 
+    "work": {
+        "location": {
+            "lat": "32.166525",
+            "long": "34.812895"
+        }
+    }
     
-date range
-```
-python timewatch.py --start-date 01-11-2019 --end-date 22-11-2019 --force-time 07:30 19:22
-```
-single specific date:
-```
-python timewatch.py --specific-date 13-11-2019 --force-time 07:30 19:22
-```
----
+-----
 
-### Overwrite values
-By default, if the date has already been filled with time values **OR** if there is an excuse filled in, the application **WILL NOT** overwrite the values.
 
-If you want to overwrite time values:
-#### Google timeline
-```
-python timewatch.py --start-date 01-11-2019 --end-date 22-11-2019 --overwrite-values
-```
-#### spoofing
-```
-python timewatch.py --start-date 01-11-2019 --end-date 22-11-2019 --force-time 07:30 19:22 --overwrite-values
-```
-__________________________
+## Usage
+### Basic usage
+> Assuming the parameters file is configured according to [Params section](#create_a_parameters_file) and the [example parameters file](params/params.json)
 
-### insert excuse
-Add excuse (with or without hours)
-Enter the excuse index as an argument together with date range. 
-The result will be populating all the working dates withing this range with this excuse.
 
-The excuse list is different between companies.
-
-The default mode is to NOT use this setting.
+#### Run for a time period
 ```
-python timewatch.py --start-date 01-11-2019 --end-date 22-11-2019 --excuse 7
+python --start-date 01-07-2020 --end-date 31-07-2020
 ```
 
-## Real-world Example
-Craete a spoof of times with an excuse - overwrite values
+#### Run for a single date
+Use the same date for start and end
 ```
-python timewatch.py --start-date 01-04-2019 --end-date 30-04-2019 --overwrite-values --excuse 16 --force-times 07:00 17:30
+python --start-date 01-07-2020 --end-date 01-07-2020
 ```
+
 _________________
 ## Style Guide
 
@@ -199,6 +146,4 @@ We are following the [google python style guide](https://google.github.io/styleg
 Docstrings should also follow google's style guide, see examples in [google docstring example](http://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html).
 
 All the modules should also follow [pep8](https://www.python.org/dev/peps/pep-0008/) (just use pyCharm it gives all the errors and warnings about pep8).
-
-
 
