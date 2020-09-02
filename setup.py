@@ -3,12 +3,15 @@ import os
 import json
 import semver
 import twlog
+from pathlib import Path
 
 
 logger = twlog.TimeWatchLogger()
 
 
 def write_params_file(params_file_path, params_default):
+    if not os.path.exists(os.path.dirname(params_file_path)):
+        Path(os.path.dirname(params_file_path)).mkdir(parents=True, exist_ok=True)
     with open(params_file_path, 'w+') as f:
         f.write(json.dumps(params_default, indent=4))
 
@@ -31,7 +34,9 @@ params_default = {
             'lat': 55.555555,
             'long': 66.666666
         },
+        'weekend': ['Friday', 'Saturday'],
         'work_day': {
+            'randomize': True,
             'max_length': 1,
             'nominal_length': 1,
             'minimal_start_time': '07:00',

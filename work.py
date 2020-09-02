@@ -43,17 +43,22 @@ class WorkDate:
         """
         if self.is_work_day(weekend):
             logger.debug('Data %s is a work day', self._date.strftime('%Y-%m-%d'))
+            self.mode = 'non_gps'
+            if self._work_location is not None:
             with KMLFile(file_date=self._date, download_dir=self._download_dir) as f:
                 kml_data = f.read()
             k = KMLData(kml_data=kml_data)
             if k.is_at_work(work_location=self._work_location):
                 self.mode = 'gps'
+            if self.mode == 'gps':
                 logger.debug('Date %s has valid gps data - work from office', self._date.strftime('%Y-%m-%d'))
                 return k.get_work_times(work_location=self._work_location)
-            else:
-                self.mode = 'non_gps'
+            elif self.mode == 'non_gps':
                 logger.debug('Date %s has no valid gps data - not in office', self._date.strftime('%Y-%m-%d'))
-                return self.spoof_times(work_day=work_day)
+                if work_day['randomize']:
+                    return self.spoof_times(work_day=work_day)
+                else:
+                    return self.fixed_times(work_day=work_day)
         else:
             self.mode = 'weekend'
 
@@ -97,6 +102,28 @@ class WorkDate:
 
         return {'start': start_time, 'end': end_time}
 
+    def fixed_times(self, work_day: dict) -> dict:
+        """
+        Generate start and end dates according to the provided parameters.
+        Start time is set to the minimal_start_time value, and
+        end time is set to the maximal_start_time value.
+
+        :param dict work_day: the parsed input from JSON parameters file section [work][work_day]
+        :return: dict with start datetime object and end datetime object representing the start/end of workday
+        """
+        ptn = r'(?P<hour>\d+)\:(?P<minute>\d+)'
+        match_min = re.search(pattern=ptn, string=work_day['minimal_start_time'])
+        match_max = re.search(pattern=ptn, string=work_day['maximal_end_time'])
+        start_time = dt.datetime(
+            year=self._date.year, month=self._date.month, day=self._date.day,
+            hour=int(match_min.group('hour')),
+            minute=int(match_min.group('minute')))
+        end_time = dt.datetime(
+            year=self._date.year, month=self._date.month, day=self._date.day,
+            hour=int(match_max.group('hour')),
+            minute=int(match_max.group('minute')))
+
+        return {'start': start_time, 'end': end_time}
 
 class KMLFile:
     """

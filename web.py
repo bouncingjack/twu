@@ -40,10 +40,11 @@ class Timewatch:
         :param datetime date: This is the current date which is an instance of the datetime.datetime.date class
         :return: Nothing
         """
-
+        work_location = self.params['work']['location'] if 'location' in self.params['work'] else None
+        download_dir = self.params['download_dir'] if 'download_dir' in self.params else None
         wd = work.WorkDate(date=date,
-                           download_dir=self.params['download_dir'],
-                           work_location=self.params['work']['location'])
+                           download_dir=download_dir,
+                           work_location=work_location)
         work_day_times = wd.query_work_date(work_day=self.params['work']['work_day'], weekend=self.params['work']['weekend'])
         if not wd.mode == 'weekend':
             self._driver.get(self._generate_specific_date_url(edit_date=date))
